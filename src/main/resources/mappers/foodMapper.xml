@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="rnb.javalec.pjt.dao.FDao">
+
+	<select id="selectByFno" parameterType="int" resultType="rnb.javalec.pjt.vo.Food">
+		SELECT FNO, FNAME, FLOC FROM FOOD WHERE FNO = #{param1}
+	</select>  
+	
+	<select id="selectReplyByFno" parameterType="int" resultType="rnb.javalec.pjt.vo.Reply">
+		SELECT RNO,FNO ,REPLYER, REPLYTEXT, USERNAME FROM FOOD_REPLY WHERE FNO = #{param1}
+		ORDER BY RNO DESC
+	</select>  
+  	
+  	<!-- 리뷰댓글 수정할 사용자정보 조회하기 -->
+  	<select id="selectUserByFno" parameterType="int" resultType="rnb.javalec.pjt.vo.Reply">
+  		SELECT * FROM FOOD_REPLY WHERE RNO = #{param1}
+  	</select>
+  
+  	<insert id="insertReplyByFno" parameterType="rnb.javalec.pjt.vo.Reply">
+  		INSERT INTO FOOD_REPLY(RNO,FNO,REPLYER, REPLYTEXT, USERNAME)
+  		VALUES(REPLY_SEQ.NEXTVAL,#{fno}, #{replyer}, #{replytext}, #{username})
+  	</insert>
+  	
+  	<update id="updateReply" parameterType="rnb.javalec.pjt.vo.Reply">
+  		  UPDATE FOOD_REPLY SET REPLYER = #{replyer} , REPLYTEXT = #{replytext} WHERE RNO = #{rno} 
+  	</update>
+  	
+  	<delete id="deleteById" parameterType="int">
+  		DELETE FROM FOOD_REPLY WHERE RNO = #{param1}
+  	</delete>
+  	
+</mapper>

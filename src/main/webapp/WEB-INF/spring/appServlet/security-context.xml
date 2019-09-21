@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+
+
+	 
+	<security:http auto-config="true" use-expressions="true">
+	<!-- 	<security:form-login login-page="/loginForm.html" default-target-url="/loginForm.html"
+		authentication-failure-url="/loginForm.do?ng" username-parameter="user_id" password-parameter="pass_wd"/>
+		
+		 -->
+		 <security:csrf disabled="true"/>
+		<security:logout logout-url="/logout" invalidate-session="true" logout-success-url="/home"/>
+		
+		<security:form-login login-page="/login" default-target-url="/home" authentication-failure-url="/login?fail=true" />
+ 		<security:intercept-url pattern="/searchMember" access="hasRole('ROLE_USER')"/> 
+ 		<security:intercept-url pattern="/list" access="hasRole('ROLE_USER')"/> 
+ 		
+	 </security:http>
+
+	<bean id="bcryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+
+	<security:authentication-manager>
+		<security:authentication-provider>
+			<security:jdbc-user-service data-source-ref="dataSource"
+			
+			users-by-username-query="select username,password, enabled from member_test where username = ?"
+			authorities-by-username-query="select username, role from tbl_user_roles where username = ? " />
+			
+			<security:password-encoder ref="bcryptPasswordEncoder"/>
+		</security:authentication-provider>
+	</security:authentication-manager>
+
+	
+
+</beans>

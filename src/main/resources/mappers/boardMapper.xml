@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+ <mapper namespace="rnb.javalec.pjt.dao.IDao">
+ 
+ 	<!-- 게시글 목록 10개씩 조회하기 --> 
+   <select id="listDao" resultType="rnb.javalec.pjt.vo.Board">
+		SELECT * FROM (SELECT ROWNUM RN, A.* FROM (SELECT * FROM BOARD ORDER BY BGROUP DESC,BSTEP ASC) A) WHERE RN BETWEEN #{param1} AND #{param2}
+	</select>
+ 	
+ 	<!--  게시글 전체 건수 조회 -->
+ 	<select id="getBoardCount" resultType="int">
+		SELECT COUNT(*) FROM BOARD 
+	 </select>
+ 
+ <select id="NsearchDao" resultType="rnb.javalec.pjt.vo.Board">
+		SELECT * FROM (SELECT ROWNUM RN, A.* FROM (SELECT * FROM BOARD WHERE
+		BNAME LIKE '%'||#{param1}||'%' ORDER BY BGROUP DESC,BSTEP ASC) A) WHERE RN BETWEEN #{param2} AND #{param3}
+</select>
+
+<select id="getNSearchBoardCount" parameterType="String" resultType="int">
+		SELECT COUNT(*) FROM BOARD WHERE BNAME LIKE '%'||#{param1}||'%'
+</select>
+
+<!--  SELECT * FROM (SELECT ROWNUM RN, A.* FROM (SELECT * FROM BOARD WHERE
+		BNAME LIKE '%'||#{param1}||'%' ORDER BY BGROUP DESC,BSTEP ASC) A) WHERE RN BETWEEN #{param2} AND #{param3} -->
+ <!-- 게시글 검색타입에 따른 쿼리 
+ 	
+ 
+ 	<select id="getNsearchBoardList"  resultType="rnb.javalec.pjt.vo.Board">
+		SELECT * FROM BOARD WHERE BNAME LIKE '%'||#{param1}||'%' ORDER BY BGROUP DESC, BSTEP ASC
+	</select>
+	
+	<select id="TsearchDao"  resultType="rnb.javalec.pjt.vo.Board">
+		SELECT * FROM BOARD WHERE BTITLE LIKE '%'||#{param1}||'%' ORDER BY BGROUP DESC, BSTEP ASC
+	</select>
+	<select id="CsearchDao"  resultType="rnb.javalec.pjt.vo.Board">
+		SELECT * FROM BOARD WHERE BCONTENT LIKE '%'||#{param1}||'%' ORDER BY BGROUP DESC, BSTEP ASC
+	</select>
+  -->
+  <!-- 게시글 내용 상세 조회 -->
+	<select id="getContent" resultType="rnb.javalec.pjt.vo.Board">
+		SELECT * FROM BOARD WHERE BID= #{param1}
+	</select>
+	
+	  <!-- 게시글 답변 뷰 보여주기 기능 -->
+	<select id="replyView" resultType="rnb.javalec.pjt.vo.Board">
+		SELECT * FROM BOARD WHERE BID= #{param1}
+	</select>
+		<!-- 사용자 계정중복 확인하는 기능 -->
+	<select id="passwordCheck" resultType="string">
+		SELECT BPASSWORD FROM BOARD WHERE BID = #{param1}
+	</select>
+ 	
+ 	  <!-- 게시글 작성 기능 -->
+ 	<insert id="writeBoard" parameterType="rnb.javalec.pjt.vo.Board" >
+		INSERT INTO BOARD (BID,BNAME,BTITLE,BCONTENT,BHIT,BGROUP,BSTEP,BINDENT, BPASSWORD,FAVORCNT, HATECNT) VALUES (BOARD_SEQ.NEXTVAL,
+		#{bName}, #{bTitle}, #{bContent},0,BOARD_SEQ.CURRVAL,0,0, #{bPassword},0,0)
+	</insert> 
+	
+		<!--  게시글 답변 기능 -->
+ 	<insert id="reply" parameterType="rnb.javalec.pjt.vo.Board" >
+		INSERT INTO BOARD (BID,BNAME,BTITLE,BCONTENT,BHIT,BGROUP,BSTEP,BINDENT,BPASSWORD,FAVORCNT, HATECNT) VALUES (BOARD_SEQ.NEXTVAL,
+		#{bName}, #{bTitle}, #{bContent},0,#{bGroup},#{bStep}+1,#{bIndent}+1,#{bPassword},0,0)
+	</insert>
+	
+	<!-- 게시글 목록에서 특정게시글의 몇번째 답변인지 보여주는 기능 -->
+	<update id="replyShape" parameterType="rnb.javalec.pjt.vo.Board" >
+		UPDATE BOARD SET BSTEP = BSTEP+1 WHERE BGROUP = #{bGroup} AND BSTEP > #{bStep}
+	</update>
+	
+	
+	
+	
+	
+	<!-- <insert id="writeDao">
+		INSERT INTO BOARD (BID,BNAME,BTITLE,BCONTENT,BHIT,BGROUP,BSTEP,BINDENT, BPASSWORD,FAVORCNT, HATECNT, FILENAME) VALUES (BOARD_SEQ.NEXTVAL,
+		#{param1}, #{param2}, #{param3},0,BOARD_SEQ.CURRVAL,0,0, #{param4},0,0,#{param5})
+	</insert> -->
+ 
+	
+	
+	<update id="modifyDao">
+		UPDATE BOARD SET BNAME = #{param2} , BTITLE = #{param3} ,BCONTENT = #{param4}  WHERE BID = #{param1} 
+	</update>
+	
+	<update id="hitUp">
+		UPDATE BOARD SET BHIT = BHIT+1 WHERE BID = #{param1} 
+	</update>
+	
+	<delete id="deleteBoard">
+		DELETE FROM BOARD WHERE BID = #{param1}
+	</delete>
+ 
+ 	<!-- 좋아요 싫어요  -->
+	
+	<update id="updateFavor">
+		UPDATE BOARD SET FAVORCNT = #{param2} WHERE BID = #{param1} 
+	</update>
+	
+	<update id="updateHate">
+		UPDATE BOARD SET HATECNT = #{param2} WHERE BID = #{param1} 
+	</update>
+	
+	<select id="getFavor" resultType="int">
+		SELECT FAVORCNT FROM BOARD WHERE BID = #{param1}
+	</select>
+	
+	<select id="getHate" resultType="int">
+		SELECT HATECNT FROM BOARD WHERE BID = #{param1}
+	</select>
+
+ </mapper>

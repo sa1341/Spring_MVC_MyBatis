@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="rnb.javalec.pjt.dao.MDao">
+  
+	<!-- 임직원 등록 -->
+  <insert id="writeMember" parameterType="rnb.javalec.pjt.vo.User" >
+		INSERT INTO MEMBER_TEST(USERNAME, PASSWORD, ENABLED, MNAME, MDEPARTMENT, MLOC) 
+		VALUES(#{username},#{password}, 1, #{mname}, #{mdepartment},#{mloc})
+	</insert> 
+	
+	<!--  임직원 권한 등록 -->
+	<insert id="writeMemberRoles" parameterType="rnb.javalec.pjt.vo.User" >
+		INSERT INTO TBL_USER_ROLES(USERNAME, ROLE) 
+		VALUES(#{username},#{role})
+	</insert>
+	
+	<!-- 시큐리티 시험용 쿼리 -->
+    <select id="testSelectMember"  resultType="rnb.javalec.pjt.vo.User">
+  		SELECT * FROM MEMBER_TEST WHERE USERNAME =#{param1}
+  	</select>
+     
+     <!-- 음식점 목록 조회 쿼리 -->
+   <select id="foodSelect"  resultType="rnb.javalec.pjt.vo.Food">
+  		SELECT * FROM FOOD WHERE FLOC=#{param1}
+  </select>
+   
+   <!-- 검색을 통한 임직원들 목록 조회 쿼리 -->
+   <select id="selectMembers" resultType="rnb.javalec.pjt.vo.User">
+   		SELECT * FROM MEMBER_TEST WHERE MNAME LIKE '%' ||  #{param1} || '%'
+   </select>
+   <select id="getMemberCount" parameterType="String" resultType="int">
+   		SELECT COUNT(*) FROM MEMBER_TEST WHERE MNAME LIKE '%' ||  #{param1} || '%'
+   </select>
+   
+  <!-- 임직원 정보 상세조회 쿼리 -->  
+  <select id="contentView" resultType="rnb.javalec.pjt.vo.User">
+  		SELECT * FROM MEMBER_TEST WHERE USERNAME = #{param1}
+  </select>
+
+  <!-- 임직원 정보 삭제 쿼리 -->  
+  <delete id="deleteMember">
+  		DELETE FROM MEMBER_TEST WHERE USERNAME = #{param1}
+  </delete>
+  
+   <!-- 임직원 권한 삭제 쿼리 -->
+  <delete id="deleteMemberRoles">
+  		DELETE FROM TBL_USER_ROLES WHERE USERNAME = #{param1}
+  </delete>
+  <!-- 임직원 정보 수정 쿼리 -->
+  <update id="updateMember" parameterType="rnb.javalec.pjt.vo.User">
+  	UPDATE MEMBER_TEST SET MNAME = #{mname} , MDEPARTMENT = #{mdepartment} ,MLOC = #{mloc}  WHERE USERNAME = #{username} 
+  </update>
+  <!-- 임직원 회원가입시 id 중복체크 하기 -->
+  <select id="checkID" parameterType="String" resultType="int">
+  	SELECT NVL(COUNT(*),0) FROM MEMBER_TEST WHERE USERNAME = #{param1}
+  </select>
+  
+</mapper>
